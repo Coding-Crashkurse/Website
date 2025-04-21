@@ -1,0 +1,41 @@
+/* ─── Google Font ─────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+
+/* ─── Tailwind ───────────────────────────────────────────────── */
+@import "tailwindcss";
+
+/* ─── Global layout / background ──────────────────────────────── */
+html {
+  @apply min-h-screen font-sans text-gray-100;
+  background: url("/background.png") center/cover fixed;
+}
+
+/* darker overlay for readability */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: -1;
+}
+
+/* ensure React root is above overlay */
+#root {
+  position: relative;
+  z-index: 10;
+}
+
+/* ─── Navbar – brighter blue + blur + shadow ─────────────────── */
+.bg-navbar {
+  @apply backdrop-blur-sm shadow-md;
+  /* same hue as chat button, 95 % opacity */
+  background-color: rgb(30 138 255 / 0.95);
+}
+
+/* navbar link hover */
+.nav-link {
+  @apply transition-opacity duration-150;
+}
+.nav-link:hover {
+  opacity: 0.8;
+}
