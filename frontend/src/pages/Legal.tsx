@@ -1,23 +1,25 @@
 export default function Legal() {
   return (
     <div className="mx-auto max-w-prose p-6">
-      <h2 className="mb-4 text-2xl font-bold">Legal Notice</h2>
+      <h2 className="mb-4 text-2xl font-bold">Impressum</h2>
+
       <p>
-        Coding Crash Courses
+        Coding Crashkurse
         <br />
-        Florian Muster
+        Markus Lang
         <br />
-        Musterstraße 1
+        Freischützstraße 72
         <br />
-        12345 Berlin, Germany
+        81927 München, Deutschland
       </p>
+
       <p className="mt-4">
-        Email:{" "}
+        E-Mail:&nbsp;
         <a
           className="text-brand underline"
-          href="mailto:info@codingcrashcourses.de"
+          href="mailto:datamastery87@gmail.com"
         >
-          info@codingcrashcourses.de
+          datamastery87@gmail.com
         </a>
       </p>
     </div>

@@ -45,3 +45,11 @@ class PromoCreate(BaseModel):
 
 class SubscriberCreate(BaseModel):
     email: EmailStr
+
+
+class ChatRequest(BaseModel):
+    message: str
+
+
+class ChatResponse(BaseModel):
+    reply: str

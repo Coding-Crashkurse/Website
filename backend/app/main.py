@@ -9,18 +9,24 @@ from fastapi.responses import RedirectResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
+
 from langchain_core.messages import AIMessage, HumanMessage
 
 from .database import init_db, SessionLocal, get_session
 from .db_models import Course, PromoCode, Subscriber
-from .schemas import CourseOut, PromoCodeOut, PromoCreate, SubscriberCreate
-from .chat_graph import get_graph
+from .schemas import (
+    CourseOut,
+    PromoCodeOut,
+    PromoCreate,
+    SubscriberCreate,
+    ChatRequest,
+    ChatResponse,
+)
+from .chat_graph import build_graph
 
+GRAPH = build_graph()
 app = FastAPI(title="Coding Crash Courses API")
 
-# --------------------------------------------------------------------------- #
-#  Auth – Basic
-# --------------------------------------------------------------------------- #
 security = HTTPBasic()
 ADMIN_USER = "admin"
 ADMIN_PASS = "changeme"
@@ -34,9 +40,6 @@ def basic_auth(credentials: HTTPBasicCredentials = Depends(security)):
         )
 
 
-# --------------------------------------------------------------------------- #
-#  Demo‑data (only first start) – REAL thumbnail URLs now
-# --------------------------------------------------------------------------- #
 @app.on_event("startup")
 def startup() -> None:
     init_db()
@@ -67,11 +70,6 @@ def startup() -> None:
         for title, (price, img) in IMAGE_MAP.items():
             course = s.query(Course).filter_by(title=title).first()
 
-            # 1) update old placeholder thumbnail
-            if course and course.image_url.startswith("https://placehold.co"):
-                course.image_url = img
-
-            # 2) create row if it doesn’t exist yet
             if not course:
                 s.add(
                     Course(
@@ -155,12 +153,15 @@ def create_thread():
     return {"thread_id": str(uuid.uuid4())}
 
 
-@app.post("/chat/{thread_id}")
-def chat(thread_id: str, message: str):
-    graph = get_graph(thread_id)
-    result = graph.invoke(
-        {"messages": [HumanMessage(content=message)]},
+@app.post("/chat/{thread_id}", response_model=ChatResponse)
+async def chat(thread_id: str, data: ChatRequest):
+    """
+    Erwartet JSON-Body: {"message": "<user text>"}
+    """
+
+    result = await GRAPH.ainvoke(
+        {"messages": [HumanMessage(content=data.message)]},
         config={"configurable": {"thread_id": thread_id}},
     )
     ai_msg = next(m for m in reversed(result["messages"]) if isinstance(m, AIMessage))
-    return {"reply": ai_msg.content}
+    return ChatResponse(reply=ai_msg.content)

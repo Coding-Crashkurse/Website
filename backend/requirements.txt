@@ -9,6 +9,5 @@ pydantic[email]
 
 openai
 langgraph
-langgraph-checkpoint-postgres
 langchain-core
-langchain-openai
+langchain-ollama

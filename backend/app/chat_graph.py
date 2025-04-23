@@ -2,12 +2,11 @@ import os
 from typing import Dict, List
 
 from langgraph.graph import StateGraph, START, END
-from langgraph.checkpoint.postgres import PostgresSaver
-from langchain_openai import ChatOpenAI
+from langgraph.checkpoint.memory import InMemorySaver
+from langchain_ollama.llms import OllamaLLM
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 
-llm = ChatOpenAI(temperature=0)
-
+llm = OllamaLLM(model=0, name="")
 
 
 def call_model(state: Dict[str, List[BaseMessage]]) -> Dict[str, List[BaseMessage]]:
@@ -19,7 +18,8 @@ def call_model(state: Dict[str, List[BaseMessage]]) -> Dict[str, List[BaseMessag
 def should_continue(_state):
     return END
 
-saver = PostgresSaver.from_conn_string(os.getenv("DATABASE_URL"))
+
+checkpointer = InMemorySaver()
 
 
 def build_graph():
@@ -27,13 +27,4 @@ def build_graph():
     g.add_node("agent", call_model)
     g.add_edge(START, "agent")
     g.add_conditional_edges("agent", should_continue)
-    return g.compile(checkpointer=saver)
-
-
-_GRAPHS: Dict[str, any] = {}
-
-
-def get_graph(thread_id: str):
-    if thread_id not in _GRAPHS:
-        _GRAPHS[thread_id] = build_graph()
-    return _GRAPHS[thread_id]
+    return g.compile(checkpointer=checkpointer)
