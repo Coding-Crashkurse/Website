@@ -1,41 +1,33 @@
-/* ─── Google Font ─────────────────────────────────────────────── */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
-
-/* ─── Tailwind ───────────────────────────────────────────────── */
+/* ─── Tailwind core (must stay first) ───────────────────────── */
 @import "tailwindcss";
 
-/* ─── Global layout / background ──────────────────────────────── */
-html {
-  @apply min-h-screen font-sans text-gray-100;
-  background: url("/background.png") center/cover fixed;
+/* ─── Custom base overrides go in Tailwind’s <base> layer ───── */
+@layer base {
+
+  /* Inter variable -- upright 100-900  */
+  @font-face {
+    font-family: "Inter";
+    src: url("/fonts/InterVariable.woff2") format("woff2-variations");
+    font-weight: 100 900;     /* variable range                    */
+    font-style:  normal;
+    font-display: swap;
+  }
+
+  /* Inter variable -- italic 100-900 (optional) */
+  @font-face {
+    font-family: "Inter";
+    src: url("/fonts/InterVariable-Italic.woff2") format("woff2-variations");
+    font-weight: 100 900;
+    font-style:  italic;
+    font-display: swap;
+  }
+
+  /* Global font stack */
+  :root {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    /* Optional: bump the default size a bit for the cleaner look you wanted */
+    font-size: 17px;            /* 1rem = 17 px (≈6 % larger than default) */
+  }
 }
 
-/* darker overlay for readability */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: -1;
-}
-
-/* ensure React root is above overlay */
-#root {
-  position: relative;
-  z-index: 10;
-}
-
-/* ─── Navbar – brighter blue + blur + shadow ─────────────────── */
-.bg-navbar {
-  @apply backdrop-blur-sm shadow-md;
-  /* same hue as chat button, 95 % opacity */
-  background-color: rgb(30 138 255 / 0.95);
-}
-
-/* navbar link hover */
-.nav-link {
-  @apply transition-opacity duration-150;
-}
-.nav-link:hover {
-  opacity: 0.8;
-}
+/* You don’t need anything else here – Tailwind will handle the rest. */

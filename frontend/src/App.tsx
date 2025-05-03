@@ -14,8 +14,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {/* Wrapper sorgt dafür, dass Seite volle Höhe hat
-          und Footer immer unten bleibt */}
+      {/* Wrapper makes the page full-height so the footer sticks to the bottom */}
       <div className="flex min-h-screen flex-col bg-[#0e1726] text-white">
         {/* NAVBAR */}
         <header className="bg-[#1e8aff] py-3 shadow-md">
@@ -48,7 +47,7 @@ export default function App() {
           </div>
         </header>
 
-        {/* MAIN – flex-grow füllt den restlichen Platz */}
+        {/* MAIN — flex-grow fills the remaining space */}
         <main className="container mx-auto flex-grow px-4 py-10">
           <Routes>
             <Route
@@ -60,12 +59,12 @@ export default function App() {
                       Hands-On Python &amp; AI Courses for Everyone
                     </h2>
                     <p className="text-lg text-gray-300">
-                      Project-driven lessons that focus on real tools across the
-                      Python ecosystem — no fluff, no buzzwords.
+                      Project-driven lessons focused on real tools across the
+                      Python ecosystem—no fluff, no buzzwords.
                     </p>
                   </section>
 
-                  <section className="grid md:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <section className="grid md:grid-cols-3 xl:grid-cols-3 gap-6">
                     {courses.map((c) => (
                       <CourseCard key={c.id} course={c} />
                     ))}
@@ -84,18 +83,18 @@ export default function App() {
 
         {/* FOOTER */}
         <footer className="text-center text-xs text-gray-400 py-4">
-          © {new Date().getFullYear()} Coding Crash Courses&nbsp;•&nbsp;
+          © {new Date().getFullYear()}&nbsp;Coding Crash Courses&nbsp;•&nbsp;
           <Link to="/legal" className="hover:underline">
-            Impressum
+            Legal&nbsp;Notice
           </Link>
           &nbsp;|&nbsp;
           <Link to="/privacy" className="hover:underline">
-            Datenschutz
+            Privacy&nbsp;Policy
           </Link>
         </footer>
       </div>
 
-      {/* optionaler Chat-Button */}
+      {/* optional floating chat button */}
       <ChatWidget />
     </BrowserRouter>
   );

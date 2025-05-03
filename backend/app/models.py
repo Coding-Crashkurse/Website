@@ -13,7 +13,6 @@ class Course(SQLModel, table=True):
     image_url: str
     udemy_url: str
 
-    # 1‑n‑Relation –  simple list‑Annotation reicht bei SQLModel
     promo_codes: list["PromoCode"] = Relationship(back_populates="course")
 
 
@@ -24,9 +23,3 @@ class PromoCode(SQLModel, table=True):
 
     course_id: int = Field(foreign_key="course.id")
     course: Optional[Course] = Relationship(back_populates="promo_codes")
-
-
-class Subscriber(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    email: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)

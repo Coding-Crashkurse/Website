@@ -4,14 +4,15 @@ export default function About() {
       <h2 className="text-2xl font-bold">About Me</h2>
 
       <p>
-        Hi, I’m <strong>Markus</strong> — a Python developer from Germany who
-        enjoys turning modern AI concepts into weekend-friendly, project-based
-        tutorials. Everything you see here is born from personal side-projects,
-        so you get the essentials without the fluff.
+        Hi, I’m <strong>Markus</strong> — a Python developer from Germany who enjoys turning modern AI concepts into weekend-friendly, project-based tutorials. Everything you see here comes from my personal side-projects, so you get the practical essentials without any fluff.
       </p>
 
       <p>
-        • All example code is open-sourced on&nbsp;
+        Outside of coding, I’m passionate about cycling and strength training. Whether it’s hitting the gym or going for a long bike ride, I believe balance between tech and fitness helps keep ideas fresh.
+      </p>
+
+      <p>
+        • All example code is open-sourced on{" "}
         <a
           href="https://github.com/Coding-Crashkurse"
           target="_blank"
@@ -21,7 +22,7 @@ export default function About() {
           GitHub
         </a>
         .
-        <br />• Free walkthrough videos live on&nbsp;
+        <br />• Free walkthrough videos are available on{" "}
         <a
           href="https://www.youtube.com/@codingcrashcourses8533"
           target="_blank"
@@ -34,10 +35,18 @@ export default function About() {
       </p>
 
       <p>
-        Like the content and want to support future crash-courses?&nbsp;
-        <strong>Get&nbsp;$200 in DigitalOcean credits</strong>&nbsp;by signing
-        up through the referral badge below—no extra cost for you, but it helps
-        me keep new lessons coming 🚀
+        Like the content and want to support future crash-courses?{" "}
+        <strong>Get $200 in DigitalOcean credits</strong> by signing up through the referral badge below — no extra cost for you, and it helps me keep new lessons coming.
+      </p>
+
+      <p>
+        💬 For questions, collaborations, or just to say hi:{" "}
+        <a
+          href="mailto:datamastery87@gmail.com"
+          className="text-[#1e8aff] underline"
+        >
+          datamastery87@gmail.com
+        </a>
       </p>
 
       {/* DigitalOcean referral badge */}
