@@ -14,7 +14,6 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {/* Wrapper makes the page full-height so the footer sticks to the bottom */}
       <div className="flex min-h-screen flex-col bg-[#0e1726] text-white">
         {/* NAVBAR */}
         <header className="bg-[#1e8aff] py-3 shadow-md">
@@ -47,7 +46,7 @@ export default function App() {
           </div>
         </header>
 
-        {/* MAIN — flex-grow fills the remaining space */}
+        {/* MAIN */}
         <main className="container mx-auto flex-grow px-4 py-10">
           <Routes>
             <Route
@@ -76,25 +75,27 @@ export default function App() {
             <Route path="/about" element={<About />} />
             <Route path="/legal" element={<Legal />} />
             <Route path="/privacy" element={<Privacy />} />
+
+            {/* Admin & Stats (BasicAuth via Nginx) */}
             <Route path="/admin" element={<AdminPanel />} />
+
             <Route path="*" element={<p className="p-6">Page not found.</p>} />
           </Routes>
         </main>
 
-        {/* FOOTER */}
         <footer className="text-center text-xs text-gray-400 py-4">
-          © {new Date().getFullYear()}&nbsp;Coding Crash Courses&nbsp;•&nbsp;
+          © {new Date().getFullYear()} Coding Crash Courses • 
           <Link to="/legal" className="hover:underline">
-            Legal&nbsp;Notice
+            Legal Notice
           </Link>
           &nbsp;|&nbsp;
           <Link to="/privacy" className="hover:underline">
-            Privacy&nbsp;Policy
+            Privacy Policy
           </Link>
         </footer>
       </div>
 
-      {/* optional floating chat button */}
+      {/* floating chat button */}
       <ChatWidget />
     </BrowserRouter>
   );

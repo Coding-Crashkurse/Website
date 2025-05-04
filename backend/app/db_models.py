@@ -1,59 +1,46 @@
-from __future__ import annotations
+"""DB-Modelle – Coding Crash Courses (SQLModel)"""
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
-from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-
-
-class Base(DeclarativeBase):  # common metadata base
-    pass
+from sqlmodel import Field, Relationship, SQLModel
 
 
-# ─────────────────────────── Course ───────────────────────────
-class Course(Base):
-    __tablename__ = "course"
+# ─────────────────────────── PromoCode ───────────────────────────
+class PromoCode(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    code: str = Field(index=True)
+    expires_at: datetime
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    title: Mapped[str]         # UNIQUE below
-    price: Mapped[float]
-    image_url: Mapped[str]
-    udemy_url: Mapped[str]
-
-    # relationship: one course → many promo codes
-    promo_codes: Mapped[List["PromoCode"]] = relationship(
-        back_populates="course",
-        cascade="all, delete-orphan",
-    )
-
-    __table_args__ = (
-        UniqueConstraint("title", name="uix_course_title"),
-    )
+    course_id: int = Field(foreign_key="course.id")
+    course: Optional["Course"] = Relationship(back_populates="promo_codes")
 
 
-# ───────────────────────── Promo-code ─────────────────────────
-class PromoCode(Base):
-    __tablename__ = "promocode"
+# ─────────────────────────── Course ──────────────────────────────
+class Course(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str = Field(unique=True, index=True)
+    price: float
+    image_url: str
+    udemy_url: str
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    code: Mapped[str]
-    expires_at: Mapped[datetime]
-
-    course_id: Mapped[int] = mapped_column(
-        ForeignKey("course.id", ondelete="CASCADE")
-    )
-    course: Mapped[Course] = relationship(back_populates="promo_codes")
+    promo_codes: List[PromoCode] = Relationship(back_populates="course")
 
 
-# ───────────────────────── Subscriber ─────────────────────────
-class Subscriber(Base):
-    __tablename__ = "subscriber"
+# ────────────────────────── Subscriber ───────────────────────────
+class Subscriber(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    email: str = Field(unique=True, index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    email: Mapped[str]
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
-    __table_args__ = (
-        UniqueConstraint("email", name="uix_subscriber_email"),
-    )
+# ─────────────────────────── ChatLog ─────────────────────────────
+class ChatLog(SQLModel, table=True):
+    """Speichert jedes Q/A-Paar der Chat-API."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    thread_id: str = Field(index=True)
+    question: str
+    answer: str
+    tokens_question: int
+    tokens_answer: int
+    timestamp: datetime = Field(default_factory=datetime.utcnow, index=True)

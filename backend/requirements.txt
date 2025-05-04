@@ -21,3 +21,4 @@ langgraph
 langchain-ollama
 sqlmodel
 cachetools
+pandas

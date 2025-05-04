@@ -2,10 +2,10 @@ import axios from "axios";
 
 export const api = axios.create({
   baseURL: "/api",
-  withCredentials: true, // keeps Basic‑Auth cookie
+  withCredentials: true, // Browser sendet Basic-Auth-Cookies / Header weiter
 });
 
-/* ── Types ─────────────────────────────────────────── */
+/* ── Typen ─────────────────────────────────────────── */
 export interface PromoCode {
   id: number;
   code: string;
@@ -21,11 +21,22 @@ export interface Course {
   promo_codes?: PromoCode[];
 }
 
+export interface Stat {
+  date: string;        // YYYY-MM-DD
+  requests: number;
+  avg_q_tokens: number;
+  avg_a_tokens: number;
+  total_tokens: number;
+}
+
 /* ── Queries ───────────────────────────────────────── */
 export const fetchCourses = () =>
   api.get<Course[]>("/courses").then((r) => r.data);
 
-/* ── Promo Mutations ──────────────────────────────── */
+export const fetchStats = () =>
+  api.get<Stat[]>("/stats").then((r) => r.data);
+
+/* ── Promo-Mutationen ─────────────────────────────── */
 export const createPromo = (
   courseId: number,
   daysValid: number,
@@ -44,7 +55,7 @@ export const createPromo = (
 export const deletePromo = (courseId: number) =>
   api.delete(`/courses/${courseId}/promo`);
 
-/* ── Chat helpers ─────────────────────────────────── */
+/* ── Chat-Helper ───────────────────────────────────── */
 export const newThread = () =>
   api.post("/chat/thread").then((r) => r.data.thread_id);
 

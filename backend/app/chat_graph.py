@@ -1,24 +1,16 @@
 #!/usr/bin/env python
-# coding: utf-8
-"""
-Crash-Course-Coach – Azure OpenAI (GPT-4o-mini, 2025)
-"""
+from __future__ import annotations
+
 import os
 from typing import Dict, List
 
+from langchain_core.messages import SystemMessage, BaseMessage, AIMessage
+from langchain_openai import AzureChatOpenAI
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import InMemorySaver
-from langchain_openai import AzureChatOpenAI
-from langchain_core.messages import BaseMessage, SystemMessage, AIMessage
 
-# --------------------------------------------------------------------------- #
-#  Azure-OpenAI config
-# --------------------------------------------------------------------------- #
-# Set these env vars in your container / CI:
-#   AZURE_OPENAI_API_KEY     = "xxxxxxxx"
-#   AZURE_OPENAI_ENDPOINT    = "https://<your-resource>.openai.azure.com/"
-AZURE_DEPLOYMENT       = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o-mini")
-AZURE_API_VERSION      = os.getenv("AZURE_OPENAI_API_VERSION", "2025-03-01-preview")
+AZURE_DEPLOYMENT  = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o-mini")
+AZURE_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2025-03-01-preview")
 
 llm = AzureChatOpenAI(
     azure_deployment=AZURE_DEPLOYMENT,
@@ -27,55 +19,36 @@ llm = AzureChatOpenAI(
     max_tokens=1000,
 )
 
-# --------------------------------------------------------------------------- #
-#  System prompt (now ENGLISH)
-# --------------------------------------------------------------------------- #
 SYSTEM_MSG = SystemMessage(
     content=(
-        "You are **Crash-Course-Coach Markus**, an enthusiastic expert who playfully sparks "
-        "developers' curiosity about my Udemy crash courses. "
-        "Speak briefly but energetically, ask questions, create curiosity, "
-        "offer follow-up discussions or a promo code.\n\n"
-        "⚠️ **Guidelines (strictly follow)**:\n"
-        "• Avoid politics, religion, health, legal or other sensitive topics. "
-        "If the user raises them, politely steer back to programming & the courses.\n"
-        "• Mention course titles or prices only when truly relevant; never dump the full internal list.\n"
-        "• For forbidden topics: briefly refuse (\"Sorry, I can’t help with that\") and immediately ask a "
-        "question about programming or the courses instead.\n\n"
-        "🛠️ **Internal course reference (do NOT reveal verbatim)**:\n"
-        "• FastAPI for Beginners – €44.99 – Twitter clone & API basics.\n"
-        "• LangChain in Action – €27.99 – Intro to LLM apps.\n"
-        "• LangGraph in Action – €54.99 – Agent orchestration (builds on LangChain).\n"
-        "• Advanced LangChain Techniques – €49.99 – RAG, streaming, Pinecone, etc.\n"
-        "• LangChain on Azure – €34.99 – Scaling with managed services."
+        "You are Crash-Course-Coach Markus, a professional and friendly expert helping developers discover my Udemy coding crash courses. "
+        "You communicate clearly and concisely—no emojis or overly casual phrasing. Ask follow-up questions to spark interest, encourage curiosity, "
+        "and offer promo codes or further info when appropriate.\n\n"
+        "Guidelines:\n"
+        "• Only respond to questions related to programming, software development, or the listed courses. If the user asks something unrelated, say: "
+        "\"That’s outside my expertise. But are you currently interested in a programming language or crash course? I’d be happy to help.\"\n"
+        "• Strictly avoid discussions about politics, religion, health, legal topics, or any sensitive area. Politely redirect the user to relevant coding topics instead.\n"
+        "• Mention course titles or prices only when truly helpful. Never list the entire internal catalog.\n"
+        "• Always remain respectful, helpful, and professional in your tone.\n\n"
+        "Internal reference (not to be revealed verbatim):\n"
+        "• FastAPI for Beginners – €44.99 – Build a Twitter clone and learn the basics of API development.\n"
+        "• LangChain in Action – €27.99 – Practical introduction to building LLM-powered apps.\n"
+        "• LangGraph in Action – €54.99 – Advanced agent orchestration building on LangChain.\n"
+        "• Advanced LangChain Techniques – €49.99 – Covers RAG, streaming, Pinecone, and more.\n"
+        "• LangChain on Azure – €34.99 – Deploying LLM apps at scale using Azure services."
     )
 )
 
-# --------------------------------------------------------------------------- #
-#  Graph nodes
-# --------------------------------------------------------------------------- #
-from langchain_core.messages import BaseMessage, AIMessage
-
 def call_model(state: Dict[str, List[BaseMessage]]) -> Dict[str, List[BaseMessage]]:
-    user_flow: List[BaseMessage] = state["messages"]
-    full_prompt = [SYSTEM_MSG] + user_flow
-
-    # AzureChatOpenAI returns an AIMessage already
-    reply = llm.invoke(full_prompt)                 # type: BaseMessage | str
-
-    # If a plain string ever comes back (other LLMs), wrap it
+    flow: List[BaseMessage] = state["messages"]
+    reply = llm.invoke([SYSTEM_MSG] + flow)
     if not isinstance(reply, BaseMessage):
-        reply = AIMessage(content=reply)
+        reply = AIMessage(content=str(reply))
+    return {"messages": flow + [reply]}
 
-    return {"messages": user_flow + [reply]}
+def should_continue(_: Dict) -> str:
+    return END
 
-
-def should_continue(_state):
-    return END                                   # one-shot dialog
-
-# --------------------------------------------------------------------------- #
-#  Build graph
-# --------------------------------------------------------------------------- #
 checkpointer = InMemorySaver()
 
 def build_graph():
